@@ -159,7 +159,7 @@
 
   See https://help.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-output-parameter
   "
-  [context release-data]
+  [context release-data api-response]
   (let [out (if-let [output (not-empty (:github/output context))]
               (-> output io/file io/writer)
               (do
