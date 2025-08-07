@@ -171,21 +171,6 @@
       (println (prepare-key-value "upload_url" (:upload_url (json/parse-string (:body api-response) true))))
       (println (prepare-key-value "body" (:body release-data))))))
 
-(defn set-output-parameters-dry!
-      "Sets output parameters for additional tasks to consume.
-      See https://help.github.com/en/actions/reference/workflow-commands-for-github-actions#setting-an-output-parameter
-      "
-      [context release-data]
-      (let [out (if-let [output (not-empty (:github/output context))]
-                        (-> output io/file io/writer)
-                        (do
-                          (println "[set-output-parameters] simulated writing to file:")
-                          *out*))]
-           (binding [*out* out]
-                    (println (prepare-key-value "tag_name" (:tag_name release-data)))
-                    (println (prepare-key-value "version" (:name release-data)))
-                    (println (prepare-key-value "body" (:body release-data))))))
-
 (defn -main [& args]
   (let [_            (println "Starting process...")
         context      (context-from-env args)
@@ -203,7 +188,6 @@
           (println "Dry Run. Not performing release\n" (json/generate-string release-data {:pretty true}))
           (println "Release Body")
           (println (:body release-data)))
-          (set-output-parameters-dry! context release-data))
         (do
           (println "Executing Release\n" (json/generate-string release-data {:pretty true}))
           (println (create-new-release! context release-data))))
